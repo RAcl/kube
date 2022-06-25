@@ -1,6 +1,8 @@
-# eks version
-FROM patoxs/githubaction:1.7.5
-
-ADD entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT [ "/entrypoint.sh" ]
+FROM redalvagui/debian11:latest
+COPY entrypoint.sh /
+ENV AWS_ACCESS_KEY_ID=
+ENV AWS_SECRET_ACCESS_KEY=
+ENV AWS_DEFAULT_REGION=us-east-1
+ENV AWS_DEFAULT_OUTPUT=json
+ENV KUBE_CONFIG=
+ENTRYPOINT ["/entrypoint.sh"]

@@ -1,0 +1,5 @@
+.dockerignore
+.git
+action.yaml
+LICENSE
+README.md

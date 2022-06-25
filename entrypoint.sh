@@ -1,44 +1,30 @@
-#!/bin/sh 
+#!/bin/bash
 
+# Stop execute on error
 set -e
 
-# if [ -z "$S3_BUCKET" ]; then
-#   echo "S3_BUCKET is not set. Quitting."
-#   exit 1
-# fi
-# if [ -z "$AWS_ACCESS_KEY_ID" ]; then
-#   echo "AWS_ACCESS_KEY_ID is not set. Quitting."
-#   exit 1
-# fi
-# if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
-#   echo "AWS_SECRET_ACCESS_KEY is not set. Quitting."
-#   exit 1
-# fi
+# create workdirs
+mkdir -p ~/{.aws,.kube}
 
-# if [-z "$FILE"]; then
-#   echo "FILE is not set. Quitting"
-#   exit 1
-# fi
+# create AWS's config files
+cat > ~/.aws/credentials << EOF_CRED
+[default]
+aws_accesss_key_id = ${AWS_ACCESS_KEY_ID}
+aws_secret_accesss_key = ${AWS_SECRET_ACCESS_KEY}
+EOF_CRED
 
-# if [ -z "$AWS_REGION"]; then
-#   AWS_REGION="us-east-1"
-# fi
+cat > ~/.aws/config << EOF_CFG
+[default]
+region = ${AWS_DEFAULT_REGION}
+output = ${AWS_DEFAULT_OUTPUT}
+EOF_CFG
 
-mkdir -p ~/.aws
+# create K8s' config file
+echo "${KUBE_CONFIG}" | base64 -d > ~/.kube/config
 
-touch ~/.aws/credentials
-
-echo "[default]
-aws_access_key_id = ${AWS_ACCESS_KEY_ID}
-aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" > ~/.aws/credentials
-
-sh -c "aws configure set region ${AWS_DEFAULT_REGION}"
-
-# Extract the base64 encoded config data and write this to the KUBECONFIG
-echo "${KUBE_CONFIG_DATA}" | base64 --decode > /tmp/config
-export KUBECONFIG=/tmp/config
-
+# execute kubectl command
 sh -c "kubectl $*"
 
+# delete workdirs
 rm -rf ~/.aws
-rm -rf /tmp/config
+rm -rf ~/.kube
