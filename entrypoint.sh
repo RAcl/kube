@@ -3,6 +3,10 @@
 # Stop execute on error
 set -e
 
+# show last AWS_ACCESS_KEY_ID
+KEY_ID=$(echo ${AWS_ACCESS_KEY_ID} | sed 's/.\{16\}/****************/g')
+echo "Use KEY_ID: ${KEY_ID}"
+
 # create workdirs
 mkdir -p ~/{.aws,.kube}
 
